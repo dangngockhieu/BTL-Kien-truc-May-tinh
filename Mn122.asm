@@ -1,60 +1,62 @@
-# Selection Sort
+# Chuong trinh: Selection Sort
 #-----------------------------------
-.data
+# Macro in chuoi
+.macro puts(%chuoi)
+	la   $a0, %chuoi
+	addi $v0, $zero, 4
+	syscall
+.end_macro
+# Data segment 
+	.data
 # Cac dinh nghia bien
 array:		.space 40  # Buffer store data from files
-fileName: 	.asciiz "INT10.BIN"
 flag:		.word 0
-
+fileName: 	.asciiz "INT10.BIN"
 space: 		.asciiz " "
 newLine: 	.asciiz "\n"
+
 # Cac cau nhac nhap du lieu
 xuat_loi: 	.asciiz "Mo file bi loi."
 xuat_bd: 	.asciiz "Mang ban dau la: "
 xuat_td: 	.asciiz "Mang co su thay doi la: "
 xuat_kt: 	.asciiz "Mang sau khi da sap xep la: "
-
-.text
-.globl	main
-
+#-----------------------------------
+# Code segment
+	.text
+	.globl	main
+#-------------------------------------
 # Chuong trinh chinh
+#-------------------------------------
 main:	
-# Nhap du lieu
-	# Call readFile:
+# Nhap (syscall)
+    	# Goi ham readFile:
 	la   $a0, fileName
   	la   $a3, array
   	jal  readFile
 
   	# in ra mang ban dau
-	la   $a0, xuat_bd
-	addi $v0, $zero, 4
-	syscall
+	puts xuat_bd
 	
-	# Call printArray
+	# Goi ham printArray
 	la   $a1, array
 	jal  printArray
 	
-	# Call selectionSort
+	# Goi ham selectionSort
 	la   $a1, array
 	jal  selectionSort
 
-# Xuat ket qua
+# Xuat ket qua (syscall)
 # in du lieu sau khi sap xep
-	la   $a0, xuat_kt
-	addi $v0, $zero 4
-	syscall
-	
-	# Call printArray
+	puts xuat_kt	
+	# Goi ham printArray
 	la   $a1, array
 	jal  printArray
-	j    ket_thuc
+	j    Kthuc
 	
 bao_loi:	
-	la   $a0, xuat_loi
-	addi $v0, $zero 4
-	syscall
-# Ket thuc chuong trinh 
-ket_thuc:	
+	puts xuat_loi
+# Ket thuc chuong trinh (syscall)
+Kthuc:	
 	addi $v0, $zero, 10
 	syscall
 #-----------------------------------
@@ -71,7 +73,7 @@ readFile:
 	bltz  $v0, bao_loi
 	sw    $v0, flag
 	
-    # doc file
+    	# doc file
   	lw    $a0, flag
 	add   $a1, $a3, $zero
   	addi  $a2, $zero, 40
@@ -201,11 +203,9 @@ selectionSort:
 	sw 	$s3, ($s1)	# store arr[i] at position of arr[indexOfMin]
 		
 	# Neu co su thay doi cua mang thi in ra man hinh
-	la 	$a0, xuat_td
-	addi 	$v0, $zero, 4
-	syscall
+	puts xuat_td
 
-	#Call printArray
+	# Goi ham printArray
 	addi 	$sp, $sp, -12
 	sw 	$ra, 8($sp)	# store $ra to stackPointer - 4
 	sw 	$t0, 4($sp)	# store$t0 <- i to stackPointer - 8
